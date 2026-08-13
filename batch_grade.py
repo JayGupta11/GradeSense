@@ -1,30 +1,3 @@
-"""
-batch_grade.py
---------------
-Grades a full CBSE-style answer sheet in one go: many questions, each
-with its own max_marks, model answer, and (optional) rubric points —
-including OPTIONAL/CHOICE questions ("attempt 4 of 5", internal "OR"
-choices), with the total guaranteed to never exceed the paper's max marks.
-
-Three input formats supported:
-
-1. --paper/--answer-key/--student-sheet : fully auto-detected mode.
-    Sections, question count, marks-per-question, AND choice groups
-    (OR-choices, "attempt N of M") are all parsed automatically from the
-    raw question paper text. See paper_parser.py for the format.
-
-2. JSON question bank + JSON student answers : lets you specify explicit
-    rubric points and/or choice groups per question by hand.
-
-3. CSV : one row per question (rubric points auto-generated from the
-    model answer; choice_group/choice_required columns optional).
-
-Usage:
-    python batch_grade.py --paper paper.txt --answer-key key.txt --student-sheet sheet.txt
-    python batch_grade.py questions.json student_answers.json
-    python batch_grade.py --csv sheet.csv
-"""
-
 import json
 import argparse
 import csv
@@ -37,21 +10,13 @@ from choice_grouping import aggregate_with_choice_groups
 
 DEFAULT_MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "marks_predictor.joblib")
 
-
 def try_load_trained_model(model_path: str = DEFAULT_MODEL_PATH) -> bool:
-    """
-    Auto-loads the trained marks-prediction model if it exists at the given
-    path. If it doesn't exist, grading silently falls back to the hand-picked
-    threshold rules in rubric_scoring.py — no error, no behavior change
-    required elsewhere. Returns True if the trained model is now active.
-    """
     if os.path.exists(model_path):
         load_trained_model(model_path)
         print(f"[batch_grade] Using trained model: {model_path}")
         return True
     print(f"[batch_grade] No trained model found at {model_path} — using rule-based scoring.")
     return False
-
 
 def load_question_bank(path: str) -> Dict[str, Question]:
     with open(path, "r") as f:
@@ -74,7 +39,6 @@ def load_question_bank(path: str) -> Dict[str, Question]:
         )
     return questions
 
-
 def _grade_bank(questions: Dict[str, Question], student_answers: Dict[str, str]):
     """Shared grading + choice-group-aware aggregation logic used by all input modes."""
     results = {}
@@ -85,13 +49,11 @@ def _grade_bank(questions: Dict[str, Question], student_answers: Dict[str, str])
     total_awarded, total_max, notes = aggregate_with_choice_groups(questions, results)
     return list(results.values()), total_awarded, total_max, notes
 
-
 def grade_from_json(questions_path: str, answers_path: str):
     questions = load_question_bank(questions_path)
     with open(answers_path, "r") as f:
         student_answers = json.load(f)  # {question_id: answer_text}
     return _grade_bank(questions, student_answers)
-
 
 def grade_from_csv(csv_path: str):
     questions, student_answers = {}, {}
@@ -111,13 +73,7 @@ def grade_from_csv(csv_path: str):
             student_answers[qid] = row["student_answer"]
     return _grade_bank(questions, student_answers)
 
-
 def grade_paper_texts(paper_text: str, answer_key_text: str, student_sheet_text: str):
-    """
-    Same as grade_from_paper() but takes already-loaded text instead of
-    file paths — this is what app_batch.py (the web UI) calls directly,
-    since uploaded files are already in memory.
-    """
     questions, missing_answers = build_question_bank(paper_text, answer_key_text)
 
     student_answers = match_student_answers(student_sheet_text, list(questions.keys()))
@@ -126,14 +82,7 @@ def grade_paper_texts(paper_text: str, answer_key_text: str, student_sheet_text:
     results_list, total_awarded, total_max, notes = _grade_bank(questions, student_answers)
     return results_list, total_awarded, total_max, notes, missing_answers, unanswered
 
-
 def grade_from_paper(paper_path: str, answer_key_path: str, student_sheet_path: str):
-    """
-    Fully auto-detected mode: give it the raw question paper text, the
-    answer key text, and the (OCR'd) student answer sheet text — sections,
-    question count, marks-per-question, AND choice groups (OR-choices,
-    "attempt N of M") are all detected automatically.
-    """
     with open(paper_path) as f:
         paper_text = f.read()
     with open(answer_key_path) as f:
@@ -151,7 +100,6 @@ def grade_from_paper(paper_path: str, answer_key_path: str, student_sheet_path: 
 
     return results, total_awarded, total_max, notes
 
-
 def print_report(results: List, total_awarded: float, total_max: float, notes: List[str] = None):
     for r in results:
         print(f"\n=== {r.question_id} ({r.max_marks} marks) ===")
@@ -168,7 +116,6 @@ def print_report(results: List, total_awarded: float, total_max: float, notes: L
 
     print("\n" + "=" * 50)
     print(f"TOTAL: {round(total_awarded, 2)} / {total_max}")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Batch-grade a full answer sheet.")

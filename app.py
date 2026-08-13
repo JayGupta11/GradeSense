@@ -1,20 +1,3 @@
-"""
-app.py
-------
-Streamlit UI for the Handwritten Answer Evaluation system.
-
-Run with:
-    streamlit run app.py
-
-Flow:
-    1. Teacher enters the model answer (and optionally keywords + max marks).
-    2. Student/teacher uploads a photo of the handwritten answer.
-    3. If the image is blurry -> upload is BLOCKED, a warning is shown, and
-        the user is asked to upload again (loop until a sharp image arrives).
-    4. Once accepted, OCR + NLP evaluation run automatically and marks +
-        feedback are displayed.
-    """
-
 import tempfile
 import os
 import streamlit as st
@@ -62,7 +45,7 @@ if uploaded_file is not None:
     quality = check_image_quality(tmp_path, threshold=blur_threshold)
 
     if not quality["accepted"]:
-        # --- BLOCK the upload ---
+        # BLOCK the upload
         st.error(
             f"🚫 Image rejected — too blurry (sharpness score: "
             f"{quality['blur_score']}, minimum required: {blur_threshold})."

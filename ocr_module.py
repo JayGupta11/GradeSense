@@ -1,20 +1,3 @@
-"""
-ocr_module.py
--------------
-Converts a (quality-checked, non-blurry) handwritten answer-sheet image
-into digital text.
-
-Primary engine : EasyOCR (deep-learning based, works reasonably well on
-                handwriting compared to classic Tesseract, no extra
-                system binary needed).
-Fallback engine: pytesseract (classic Tesseract OCR) — used automatically
-                if EasyOCR is not installed/available.
-
-For production-grade handwriting OCR you would fine-tune a model such as
-TrOCR (microsoft/trocr-base-handwritten) on the IAM Handwriting Database —
-see README.md for dataset links and notes on that upgrade path.
-"""
-
 from typing import Optional
 import cv2
 import numpy as np
@@ -22,10 +5,8 @@ import numpy as np
 _easyocr_reader = None
 _engine = None
 
-
+# Light preprocessing: grayscale + adaptive threshold + denoise.
 def _preprocess_for_ocr(image_path: str) -> np.ndarray:
-    """Light preprocessing: grayscale + adaptive threshold + denoise.
-    Helps both EasyOCR and Tesseract read handwriting more reliably."""
     img = cv2.imread(image_path)
     if img is None:
         raise ValueError(f"Could not read image at: {image_path}")
@@ -37,26 +18,21 @@ def _preprocess_for_ocr(image_path: str) -> np.ndarray:
     )
     return gray
 
-
 def _get_easyocr_reader():
     global _easyocr_reader
     if _easyocr_reader is None:
-        import easyocr  # imported lazily so the project still runs w/o it
+        import easyocr
 
         _easyocr_reader = easyocr.Reader(["en"], gpu=False)
     return _easyocr_reader
 
 
 def extract_text(image_path: str, preprocess: bool = True) -> str:
-    """
-    Main entry point: returns the extracted text as a single string.
-    Tries EasyOCR first, falls back to pytesseract if EasyOCR is missing.
-    """
     global _engine
 
     source = _preprocess_for_ocr(image_path) if preprocess else image_path
 
-    # --- Try EasyOCR ---
+    # Using EasyOCR
     try:
         reader = _get_easyocr_reader()
         _engine = "easyocr"
@@ -69,7 +45,7 @@ def extract_text(image_path: str, preprocess: bool = True) -> str:
     except Exception as e:
         print(f"[ocr_module] EasyOCR failed ({e}), falling back to Tesseract...")
 
-    # --- Fallback: pytesseract ---
+    # Fallback: pytesseract
     try:
         import pytesseract
         from PIL import Image
@@ -85,10 +61,8 @@ def extract_text(image_path: str, preprocess: bool = True) -> str:
             "`pip install pytesseract` (plus the tesseract binary)."
         )
 
-
 def get_active_engine() -> Optional[str]:
     return _engine
-
 
 if __name__ == "__main__":
     import sys

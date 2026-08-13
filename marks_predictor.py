@@ -1,33 +1,3 @@
-"""
-marks_predictor.py
--------------------
-A genuinely TRAINED model (not a pretrained/off-the-shelf one) that learns
-to map answer-quality features -> a normalized score in [0, 1].
-
-This replaces the hand-picked threshold logic in rubric_scoring.py's
-_credit_fraction() with something learned from real human-graded data
-(see train_marks_predictor.py).
-
-Why normalized [0,1] and not raw marks: different datasets/questions use
-different mark scales (0-3, 0-5, 0-10...). Training the model to predict
-a FRACTION of full marks makes it reusable for ANY question regardless of
-its actual max_marks — at inference time you just do:
-
-    predicted_marks = model.predict(features) * question.max_marks
-
-Features used (all already computed elsewhere in this project):
-    - semantic/overlap similarity between student answer and reference point
-    - token overlap ratio (keyword coverage)
-    - length ratio (student answer length / expected length)
-    - student answer sentence count (proxy for structure/completeness)
-
-Model: RandomForestRegressor (scikit-learn) — chosen over a deep net
-because ASAG feature sets are small/tabular (a handful of numeric
-features), where tree ensembles reliably outperform small neural nets
-and train in seconds on CPU with no GPU required. This is a legitimate,
-defensible "trained from scratch" model for a project viva.
-"""
-
 import json
 import os
 import re
@@ -42,7 +12,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 from nlp_evaluator import clean_text, semantic_similarity
 
-
 def _token_overlap_ratio(reference_text: str, candidate_text: str) -> float:
     ref_tokens = set(clean_text(reference_text).split())
     cand_tokens = set(clean_text(candidate_text).split())
@@ -50,12 +19,7 @@ def _token_overlap_ratio(reference_text: str, candidate_text: str) -> float:
         return 0.0
     return len(ref_tokens & cand_tokens) / len(ref_tokens)
 
-
 def extract_features(reference_answer: str, student_answer: str) -> np.ndarray:
-    """
-    Turns a (reference_answer, student_answer) pair into a fixed-size
-    numeric feature vector for the model.
-    """
     similarity, _method = semantic_similarity(student_answer, reference_answer)
     overlap = _token_overlap_ratio(reference_answer, student_answer)
 
@@ -67,9 +31,7 @@ def extract_features(reference_answer: str, student_answer: str) -> np.ndarray:
 
     return np.array([similarity, overlap, length_ratio, sentence_count], dtype=float)
 
-
 FEATURE_NAMES = ["similarity", "token_overlap", "length_ratio", "sentence_count"]
-
 
 @dataclass
 class TrainingReport:
@@ -80,15 +42,12 @@ class TrainingReport:
     n_test: int
     feature_importances: dict
 
-
 class MarksPredictor:
-    """Thin wrapper around a trained sklearn model with save/load + predict."""
-
     def __init__(self, model: RandomForestRegressor = None):
         self.model = model
 
+    # Returns predicted score as a fraction in [0, 1] of full marks.
     def predict_fraction(self, reference_answer: str, student_answer: str) -> float:
-        """Returns predicted score as a fraction in [0, 1] of full marks."""
         if self.model is None:
             raise RuntimeError("Model not loaded/trained. Call train() or load().")
         features = extract_features(reference_answer, student_answer).reshape(1, -1)

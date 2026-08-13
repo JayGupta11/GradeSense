@@ -1,40 +1,3 @@
-"""
-train_marks_predictor.py
--------------------------
-Trains the MarksPredictor model (marks_predictor.py) on ASAG2024, using
-the proper three-way split:
-
-    train.parquet      -> the ONLY data the model ever learns from
-    validation.parquet -> used purely for model/hyperparameter selection
-                            (never used to fit the model itself)
-    test.parquet       -> touched exactly once, at the very end, for the
-                            final unbiased performance report
-
-Confirmed real ASAG2024 schema:
-    columns: question, provided_answer, reference_answer, grade,
-                data_source, normalized_grade, weight
-
-    - provided_answer   = the student's answer
-    - reference_answer  = the correct/model answer
-    - normalized_grade  = already on a [0,1] scale across all combined
-                            source datasets -> used directly as the label
-    - data_source       = SciEntsBank, Beetle, SAF, DigiKlausur, Mohler,
-                            Stita, CU-NLP (7 real combined datasets)
-
-Known data quality issues in the real files (handled below):
-    - `question` has ~6% missing values -> harmless, not used as a feature
-    - `provided_answer` has a small number of missing/blank values, all
-        with grade 0.0 -> converted to an explicit empty string (NOT the
-        literal text "nan", which pandas would otherwise produce and which
-        would corrupt the similarity features)
-    - a handful of rows have an empty/missing `reference_answer` -> these
-        are dropped since there's nothing to compare the student's answer to
-
-Usage:
-    python train_marks_predictor.py
-    python train_marks_predictor.py --train-data ../data/train.parquet --validation-data ../data/validation.parquet --test-data ../data/test.parquet --out ../models/marks_predictor.joblib
-"""
-
 import argparse
 import os
 import numpy as np
@@ -49,7 +12,7 @@ COLUMN_MAP = {
     "student_answer": "provided_answer",
     "score": "normalized_grade",
 }
-MAX_SCORE = 1.0  # normalized_grade is already on [0,1] in ASAG2024
+MAX_SCORE = 1.0  
 
 # A small hyperparameter grid to select from using the validation set.
 CANDIDATE_HYPERPARAMS = [
@@ -57,7 +20,6 @@ CANDIDATE_HYPERPARAMS = [
     {"n_estimators": 200, "max_depth": 10, "min_samples_leaf": 3},
     {"n_estimators": 300, "max_depth": None, "min_samples_leaf": 2},
 ]
-
 
 def _load_any(path: str) -> pd.DataFrame:
     ext = os.path.splitext(path)[1].lower()
@@ -68,13 +30,7 @@ def _load_any(path: str) -> pd.DataFrame:
     else:
         raise ValueError(f"Unsupported file extension '{ext}'. Use .csv or .parquet.")
 
-
 def build_training_data(data_path: str):
-    """
-    Loads a data file and builds (X, y) arrays, explicitly handling the
-    real dataset's missing values rather than letting them silently
-    corrupt features (see module docstring for details).
-    """
     df = _load_any(data_path)
 
     missing_cols = set(COLUMN_MAP.values()) - set(df.columns)
@@ -88,15 +44,11 @@ def build_training_data(data_path: str):
     stu_col = COLUMN_MAP["student_answer"]
     score_col = COLUMN_MAP["score"]
 
-    # A missing/blank reference answer means there's nothing to score
-    # against -> drop these rows entirely (only affects a handful of rows).
     before = len(df)
     df = df.dropna(subset=[ref_col, score_col])
     df = df[df[ref_col].astype(str).str.strip() != ""]
     dropped_no_reference = before - len(df)
 
-    # A missing student answer -> a TRUE blank ("") not the literal text
-    # "nan" that str(NaN) would otherwise produce.
     df[stu_col] = df[stu_col].fillna("")
 
     X, y = [], []
@@ -113,7 +65,6 @@ def build_training_data(data_path: str):
         print(f"  (dropped {dropped_no_reference} rows with no reference answer to compare against)")
 
     return np.array(X), np.array(y)
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train the marks-prediction model with a proper train/validation/test split.")

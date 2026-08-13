@@ -1,18 +1,3 @@
-"""
-pipeline.py
------------
-End-to-end pipeline:
-
-    upload image
-        -> blur/quality check (REJECT + ask to re-upload if too blurry)
-        -> OCR (image -> text)
-        -> NLP comparison against model answer (+ optional keyword list)
-        -> marks + feedback
-
-This can be called from a CLI, a Streamlit app (see app.py), or wrapped
-in a REST API.
-"""
-
 from dataclasses import dataclass, asdict
 from typing import List, Optional
 
@@ -26,16 +11,14 @@ from nlp_evaluator import (
 )
 from scoring_engine import evaluate, EvaluationResult
 
-
 @dataclass
 class PipelineResult:
-    status: str  # "REJECTED_BLURRY" | "SUCCESS" | "ERROR"
+    status: str 
     message: str
     blur_score: Optional[float] = None
     ocr_text: Optional[str] = None
     ocr_engine: Optional[str] = None
     evaluation: Optional[dict] = None
-
 
 def evaluate_answer_sheet(
     image_path: str,
@@ -44,10 +27,7 @@ def evaluate_answer_sheet(
     max_marks: float = 10.0,
     blur_threshold: float = 100.0,
 ) -> PipelineResult:
-    """
-    Runs the full pipeline for a single uploaded answer image.
-    """
-    # Step 1: Quality gate — block blurry uploads before wasting OCR/NLP compute
+    # Quality gate — block blurry uploads before wasting OCR/NLP compute
     quality = check_image_quality(image_path, threshold=blur_threshold)
     if not quality["accepted"]:
         return PipelineResult(
@@ -56,7 +36,7 @@ def evaluate_answer_sheet(
             blur_score=quality["blur_score"],
         )
 
-    # Step 2: OCR
+    # OCR
     try:
         student_text = extract_text(image_path)
     except Exception as e:
@@ -79,7 +59,7 @@ def evaluate_answer_sheet(
             ocr_engine=get_active_engine(),
         )
 
-    # Step 3: NLP comparison
+    # NLP comparison
     if not keywords:
         keywords = extract_keywords_from_model_answer(model_answer)
 
@@ -104,7 +84,6 @@ def evaluate_answer_sheet(
         evaluation=asdict(result),
     )
 
-
 def _print_result(result: PipelineResult):
     print(f"\nStatus: {result.status}")
     print(f"Message: {result.message}")
@@ -127,7 +106,6 @@ def _print_result(result: PipelineResult):
         print(f"Missing keywords: {ev['missing_keywords']}")
         print(f"Marks: {ev['marks']} / {ev['max_marks']}")
         print(f"Feedback: {ev['feedback']}")
-
 
 if __name__ == "__main__":
     import argparse

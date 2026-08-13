@@ -1,26 +1,3 @@
-"""
-app_batch.py
-------------
-GradeSense — web app for grading a WHOLE CLASS at once, no terminal needed.
-
-Workflow:
-    1. Upload the question paper — .txt OR .pdf (typed or scanned, handled
-        independently of the answer key).
-    2. Upload the answer key — .txt OR .pdf, independently of the paper.
-        Sections, marks per question, and choice groups (OR-choices,
-        "attempt N of M") are all auto-detected from the paper.
-    3. Upload every student's answer sheet (.txt/.jpg/.png/.pdf), named by
-        roll number. Answers are matched to questions by number regardless
-        of the order they were written in, including lettered sub-parts
-        (e.g. "1(a)"), with a positional fallback if a student writes no
-        numbering at all.
-    4. Grade the whole class in one pass, with class-level statistics and
-        a downloadable CSV.
-
-Run with:
-    streamlit run app_batch.py
-"""
-
 import io
 import os
 import tempfile
@@ -39,9 +16,8 @@ LOGO_PATH = os.path.join(os.path.dirname(__file__), "assets", "logo.png")
 
 _model_active = try_load_trained_model(DEFAULT_MODEL_PATH)
 
-# ---------------------------------------------------------------------
-# Sidebar: branding + settings (Issue 4 — more options, better UI)
-# ---------------------------------------------------------------------
+# Sidebar: branding + settings
+
 with st.sidebar:
     if os.path.exists(LOGO_PATH):
         st.image(LOGO_PATH, width=72)
@@ -73,7 +49,6 @@ st.caption(
     "class in one pass."
 )
 
-
 def _read_text_or_pdf(uploaded_file):
     """Reads an uploaded .txt or .pdf file into plain text. For PDFs, uses
     the real text layer when available (typed question papers/answer keys)
@@ -84,10 +59,7 @@ def _read_text_or_pdf(uploaded_file):
         return extract_pdf_text(raw)
     return raw.decode("utf-8")
 
-
-# ---------------------------------------------------------------------
-# Step 1 & 2: Question paper + answer key — INDEPENDENT uploads, PDF or txt
-# ---------------------------------------------------------------------
+# Question paper + answer key
 
 tab_setup, tab_students, tab_results = st.tabs(["1. Question Paper & Answer Key", "2. Student Answer Sheets", "3. Results"])
 
@@ -136,9 +108,7 @@ with tab_setup:
         icon="ℹ️",
     )
 
-# ---------------------------------------------------------------------
-# Step 3: Student answer sheets (many at once)
-# ---------------------------------------------------------------------
+# Student answer sheets (many at once)
 
 with tab_students:
     st.subheader("🧑‍🎓 Student answer sheets")
@@ -168,9 +138,7 @@ with tab_students:
     if not (paper_text and answer_key_text and student_files):
         st.caption("Upload the question paper, answer key, and at least one student file to enable grading.")
 
-# ---------------------------------------------------------------------
-# Step 4: Grade everyone + results tab
-# ---------------------------------------------------------------------
+# Grade everyone + results tab
 
 with tab_results:
     if "class_rows" not in st.session_state:

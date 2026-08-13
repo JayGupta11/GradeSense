@@ -1,18 +1,5 @@
-"""
-scoring_engine.py
-------------------
-Converts similarity + keyword-coverage + length signals into:
-    - a numeric mark out of the question's max_marks
-    - human-readable feedback
-
-Weights are configurable so a teacher can tune how much emphasis goes on
-"said the right things (keywords)" vs "understood the concept overall
-(semantic similarity)".
-"""
-
 from dataclasses import dataclass, field
 from typing import List
-
 
 @dataclass
 class EvaluationResult:
@@ -26,7 +13,6 @@ class EvaluationResult:
     max_marks: float
     feedback: str
 
-
 def generate_score(
     similarity: float,
     keyword_coverage: float,
@@ -37,12 +23,6 @@ def generate_score(
     weight_length: float = 0.10,
     min_length_ratio_for_full_credit: float = 0.4,
 ) -> float:
-    """
-    Weighted combination of signals -> marks out of max_marks.
-    An answer that's too short (relative to the model answer) gets a
-    length penalty even if the few words it has match well, to discourage
-    one-line non-answers from scoring highly on similarity alone.
-    """
     length_factor = min(length_ratio / min_length_ratio_for_full_credit, 1.0)
 
     raw_score = (
@@ -52,7 +32,6 @@ def generate_score(
     )
     raw_score = max(0.0, min(1.0, raw_score))
     return round(raw_score * max_marks, 2)
-
 
 def generate_feedback(
     similarity: float,
@@ -84,7 +63,6 @@ def generate_feedback(
         parts.append("The answer is quite long relative to what was expected; try to be more concise.")
 
     return " ".join(parts)
-
 
 def evaluate(
     similarity: float,
