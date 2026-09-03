@@ -1,11 +1,11 @@
+# PyTorch with CUDA 12.6
+--extra-index-url https://download.pytorch.org/whl/cu126
+torch
+
 # Core CV / blur detection / preprocessing
 opencv-python-headless>=4.8.0
 numpy>=1.24.0
 pillow>=10.0.0
-
-# OCR (primary + fallback)
-easyocr>=1.7.1
-pytesseract>=0.3.10
 
 # NLP
 scikit-learn>=1.3.0
@@ -14,11 +14,15 @@ sentence-transformers>=2.2.2
 
 # Web UI
 streamlit>=1.30.0
+streamlit-cropper>=0.2.2
 
 # Trainable marks-prediction model
 pandas>=2.0.0
 joblib>=1.3.0
-pyarrow>=14.0.0   
+pyarrow>=14.0.0  
 
-# PDF answer sheet support
+# PDF answer sheet support (multi-page booklets, no external poppler needed)
 PyMuPDF>=1.23.0
+
+# database using MongoDB
+pymongo
