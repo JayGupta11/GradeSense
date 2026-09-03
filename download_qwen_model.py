@@ -1,12 +1,10 @@
 import os
 from pathlib import Path
 
-# Increase network timeout for large model files.
 os.environ["HF_HUB_DOWNLOAD_TIMEOUT"] = "120"
 os.environ["HF_HUB_ETAG_TIMEOUT"] = "30"
 
 from huggingface_hub import snapshot_download
-
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
