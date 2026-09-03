@@ -8,19 +8,9 @@ import email_utils
 BASE_DIR = os.path.dirname(__file__)
 LOGO_PATH = os.path.join(BASE_DIR, "assets", "logo.png")
 
-
-# ============================================================
-# AUTHENTICATION THEME
-# ============================================================
-
 st.markdown(
     """
     <style>
-
-    /* ========================================================
-        ANIMATED GRADIENT BACKGROUND
-       ======================================================== */
-
     .stApp {
         background:
             radial-gradient(
@@ -52,7 +42,6 @@ st.markdown(
         min-height: 100vh;
     }
 
-
     @keyframes gsAuthBackground {
 
         0% {
@@ -69,7 +58,6 @@ st.markdown(
 
     }
 
-
     [data-testid="stAppViewContainer"] {
         background: transparent !important;
     }
@@ -78,11 +66,6 @@ st.markdown(
     [data-testid="stHeader"] {
         background: transparent !important;
     }
-
-
-    /* ========================================================
-        STABLE AUTHENTICATION WIDTH
-       ======================================================== */
 
     [data-testid="stMainBlockContainer"],
     .stMainBlockContainer {
@@ -117,11 +100,6 @@ st.markdown(
 
     }
 
-
-    /* ========================================================
-        TEXT
-       ======================================================== */
-
     .gs-brand-title {
         font-size: 42px;
         font-weight: 850;
@@ -131,13 +109,11 @@ st.markdown(
         margin-bottom: 4px;
     }
 
-
     .gs-brand-subtitle {
         color: #aeb8ce;
         font-size: 15px;
         margin-bottom: 12px;
     }
-
 
     .gs-section-title {
         font-size: 30px;
@@ -148,13 +124,11 @@ st.markdown(
         margin-bottom: 6px;
     }
 
-
     .gs-section-subtitle {
         color: #9ba6bd;
         font-size: 14px;
         margin-bottom: 20px;
     }
-
 
     .gs-badge {
         display: inline-block;
@@ -167,11 +141,6 @@ st.markdown(
         font-weight: 750;
         letter-spacing: 0.4px;
     }
-
-
-    /* ========================================================
-        INTRO CARD
-       ======================================================== */
 
     .gs-intro {
         padding: 22px;
@@ -189,7 +158,6 @@ st.markdown(
             0 18px 55px rgba(0, 0, 0, 0.20);
     }
 
-
     .gs-intro-title {
         color: #ffffff;
         font-size: 22px;
@@ -197,17 +165,11 @@ st.markdown(
         margin-bottom: 6px;
     }
 
-
     .gs-intro-text {
         color: #b8c2d7;
         font-size: 13px;
         line-height: 1.65;
     }
-
-
-    /* ========================================================
-        FEATURE CARDS
-       ======================================================== */
 
     .gs-feature {
         min-height: 120px;
@@ -228,7 +190,6 @@ st.markdown(
             box-shadow 0.25s ease;
     }
 
-
     .gs-feature:hover {
         transform: translateY(-3px);
         border-color: rgba(129, 140, 248, 0.45);
@@ -236,12 +197,10 @@ st.markdown(
             0 15px 35px rgba(99, 102, 241, 0.16);
     }
 
-
     .gs-feature-icon {
         font-size: 22px;
         margin-bottom: 7px;
     }
-
 
     .gs-feature-title {
         color: #ffffff;
@@ -250,23 +209,16 @@ st.markdown(
         margin-bottom: 5px;
     }
 
-
     .gs-feature-text {
         color: #9ba6bd;
         font-size: 11px;
         line-height: 1.5;
     }
 
-
-    /* ========================================================
-        INPUTS
-       ======================================================== */
-
     .stTextInput label {
         color: #e5e7eb !important;
         font-weight: 650 !important;
     }
-
 
     .stTextInput input {
         min-height: 46px !important;
@@ -281,11 +233,9 @@ st.markdown(
         color: #ffffff !important;
     }
 
-
     .stTextInput input::placeholder {
         color: #8d96aa !important;
     }
-
 
     .stTextInput input:focus {
         border-color:
@@ -295,11 +245,6 @@ st.markdown(
             0 0 0 3px
             rgba(99, 102, 241, 0.14) !important;
     }
-
-
-    /* ========================================================
-        BUTTONS
-       ======================================================== */
 
     .stButton > button {
         min-height: 46px !important;
@@ -311,7 +256,6 @@ st.markdown(
             box-shadow 0.2s ease !important;
     }
 
-
     .stButton > button:hover {
         transform: translateY(-2px) !important;
 
@@ -319,7 +263,6 @@ st.markdown(
             0 12px 28px
             rgba(99, 102, 241, 0.20) !important;
     }
-
 
     .stButton > button[kind="primary"] {
         color: #ffffff !important;
@@ -342,7 +285,6 @@ st.markdown(
         border: none !important;
     }
 
-
     @keyframes gsButtonGradient {
 
         0% {
@@ -359,38 +301,18 @@ st.markdown(
 
     }
 
-
-    /* ========================================================
-        ALERTS
-       ======================================================== */
-
     div[data-testid="stAlert"] {
         border-radius: 12px !important;
     }
-
-
-    /* ========================================================
-        TABS
-       ======================================================== */
 
     button[data-baseweb="tab"] {
         font-weight: 700 !important;
     }
 
-
-    /* ========================================================
-        DIVIDERS
-       ======================================================== */
-
     hr {
         border-color:
             rgba(148, 163, 184, 0.16) !important;
     }
-
-
-    /* ========================================================
-        FOOTER
-       ======================================================== */
 
     .gs-footer {
         text-align: center;
@@ -404,11 +326,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
-# ============================================================
-# VALIDATION
-# ============================================================
 
 def _username_rules(username):
     username = username.strip()
@@ -433,7 +350,6 @@ def _username_rules(username):
 
     return True, ""
 
-
 def _name_rules(name):
     name = name.strip()
 
@@ -457,7 +373,6 @@ def _name_rules(name):
 
     return True, ""
 
-
 def _password_rules(password):
     if not password:
         return False, "Password is required."
@@ -476,7 +391,6 @@ def _password_rules(password):
 
     return True, ""
 
-
 def _email_rules(email):
     email = email.strip()
 
@@ -490,11 +404,6 @@ def _email_rules(email):
         return False, "Enter a valid email address."
 
     return True, ""
-
-
-# ============================================================
-# REGISTER USERNAME CHECK
-# ============================================================
 
 def _register_username_check(username):
 
@@ -537,11 +446,6 @@ def _register_username_check(username):
     )
 
     return False
-
-
-# ============================================================
-# LOGIN USERNAME CHECK
-# ============================================================
 
 def _login_username_check(username):
 
@@ -595,11 +499,6 @@ def _login_username_check(username):
     )
 
     return False
-
-
-# ============================================================
-# PASSWORD CHECKLIST
-# ============================================================
 
 def _password_checklist(password):
 
@@ -666,11 +565,6 @@ def _password_checklist(password):
                 "Number",
                 icon="🔴",
             )
-
-
-# ============================================================
-# OTP FORM
-# ============================================================
 
 def _otp_form():
 
@@ -824,20 +718,11 @@ def _otp_form():
 
         st.rerun()
 
-
-# ============================================================
-# REGISTER FORM
-# ============================================================
-
 def _register_form():
 
     st.subheader(
         "Create your account"
     )
-
-    # --------------------------------------------------------
-    # FULL NAME
-    # --------------------------------------------------------
 
     full_name = st.text_input(
         "Full name",
@@ -868,10 +753,6 @@ def _register_form():
                 icon="❌",
             )
 
-    # --------------------------------------------------------
-    # USERNAME
-    # --------------------------------------------------------
-
     username = st.text_input(
         "Username",
         key="reg_username",
@@ -882,10 +763,6 @@ def _register_form():
     username_ok = _register_username_check(
         username
     )
-
-    # --------------------------------------------------------
-    # EMAIL
-    # --------------------------------------------------------
 
     email = st.text_input(
         "Email address",
@@ -915,10 +792,6 @@ def _register_form():
                 icon="❌",
             )
 
-    # --------------------------------------------------------
-    # PASSWORD
-    # --------------------------------------------------------
-
     password = st.text_input(
         "Password",
         type="password",
@@ -933,10 +806,6 @@ def _register_form():
     password_ok, password_message = (
         _password_rules(password)
     )
-
-    # --------------------------------------------------------
-    # CONFIRM PASSWORD
-    # --------------------------------------------------------
 
     confirm_password = st.text_input(
         "Confirm password",
@@ -966,10 +835,6 @@ def _register_form():
                 icon="❌",
             )
 
-    # --------------------------------------------------------
-    # STATUS
-    # --------------------------------------------------------
-
     ready = (
         name_ok
         and username_ok
@@ -994,10 +859,6 @@ def _register_form():
             icon="ℹ️",
         )
 
-    # --------------------------------------------------------
-    # REGISTER BUTTON
-    # --------------------------------------------------------
-
     if st.button(
         "Send OTP & Create Account",
         type="primary",
@@ -1008,10 +869,6 @@ def _register_form():
         clean_name = full_name.strip()
         clean_username = username.strip()
         clean_email = email.strip()
-
-        # ----------------------------------------------------
-        # NAME
-        # ----------------------------------------------------
 
         valid_name, name_error = _name_rules(
             clean_name
@@ -1025,10 +882,6 @@ def _register_form():
             )
 
             return
-
-        # ----------------------------------------------------
-        # USERNAME FORMAT
-        # ----------------------------------------------------
 
         valid_username, username_error = (
             _username_rules(
@@ -1044,10 +897,6 @@ def _register_form():
             )
 
             return
-
-        # ----------------------------------------------------
-        # USERNAME DATABASE CHECK
-        # ----------------------------------------------------
 
         try:
 
@@ -1076,10 +925,6 @@ def _register_form():
 
             return
 
-        # ----------------------------------------------------
-        # EMAIL
-        # ----------------------------------------------------
-
         valid_email, email_error = _email_rules(
             clean_email
         )
@@ -1092,10 +937,6 @@ def _register_form():
             )
 
             return
-
-        # ----------------------------------------------------
-        # PASSWORD
-        # ----------------------------------------------------
 
         valid_password, password_error = (
             _password_rules(
@@ -1112,10 +953,6 @@ def _register_form():
 
             return
 
-        # ----------------------------------------------------
-        # PASSWORD MATCH
-        # ----------------------------------------------------
-
         if password != confirm_password:
 
             st.error(
@@ -1124,10 +961,6 @@ def _register_form():
             )
 
             return
-
-        # ----------------------------------------------------
-        # CREATE ACCOUNT
-        # ----------------------------------------------------
 
         result = db.register_user(
             clean_username,
@@ -1146,10 +979,6 @@ def _register_form():
             )
 
             return
-
-        # ----------------------------------------------------
-        # SAVE FULL NAME
-        # ----------------------------------------------------
 
         try:
 
@@ -1171,10 +1000,6 @@ def _register_form():
                 f"Account created, but the name could not be saved: {exc}",
                 icon="⚠️",
             )
-
-        # ----------------------------------------------------
-        # OTP STATE
-        # ----------------------------------------------------
 
         st.session_state.pending_username = (
             clean_username
@@ -1201,11 +1026,6 @@ def _register_form():
 
         st.rerun()
 
-
-# ============================================================
-# LOGIN FORM
-# ============================================================
-
 def _login_form():
 
     st.subheader(
@@ -1215,10 +1035,6 @@ def _login_form():
     st.caption(
         "Sign in to continue to your GradeSense assessment workspace."
     )
-
-    # --------------------------------------------------------
-    # USERNAME
-    # --------------------------------------------------------
 
     username = st.text_input(
         "Username",
@@ -1231,10 +1047,6 @@ def _login_form():
         username
     )
 
-    # --------------------------------------------------------
-    # PASSWORD
-    # --------------------------------------------------------
-
     password = st.text_input(
         "Password",
         type="password",
@@ -1245,10 +1057,6 @@ def _login_form():
 
     st.divider()
 
-    # --------------------------------------------------------
-    # LOGIN BUTTON
-    # --------------------------------------------------------
-
     if st.button(
         "Sign in to GradeSense",
         type="primary",
@@ -1257,10 +1065,6 @@ def _login_form():
     ):
 
         clean_username = username.strip()
-
-        # ----------------------------------------------------
-        # USERNAME VALIDATION
-        # ----------------------------------------------------
 
         valid_username, username_error = (
             _username_rules(
@@ -1277,10 +1081,6 @@ def _login_form():
 
             return
 
-        # ----------------------------------------------------
-        # PASSWORD VALIDATION
-        # ----------------------------------------------------
-
         if not password:
 
             st.error(
@@ -1289,11 +1089,6 @@ def _login_form():
             )
 
             return
-
-
-        # ----------------------------------------------------
-        # DATABASE LOOKUP
-        # ----------------------------------------------------
 
         try:
 
@@ -1324,10 +1119,6 @@ def _login_form():
             )
 
             return
-
-        # ----------------------------------------------------
-        # AUTHENTICATE
-        # ----------------------------------------------------
 
         result = db.authenticate_user(
             clean_username,
@@ -1399,16 +1190,7 @@ def _login_form():
                 icon="❌",
             )
 
-
-# ============================================================
-# MAIN AUTH PAGE
-# ============================================================
-
 def require_login():
-
-    # --------------------------------------------------------
-    # SESSION DEFAULTS
-    # --------------------------------------------------------
 
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
@@ -1419,16 +1201,8 @@ def require_login():
     if "display_name" not in st.session_state:
         st.session_state.display_name = None
 
-    # --------------------------------------------------------
-    # ALREADY LOGGED IN
-    # --------------------------------------------------------
-
     if st.session_state.authenticated:
         return
-
-    # --------------------------------------------------------
-    # DATABASE CONNECTION
-    # --------------------------------------------------------
 
     if not db.check_connection():
 
@@ -1439,10 +1213,6 @@ def require_login():
         )
 
         st.stop()
-
-    # --------------------------------------------------------
-    # OTP SCREEN
-    # --------------------------------------------------------
 
     if "pending_username" in st.session_state:
 
@@ -1466,10 +1236,6 @@ def require_login():
         _otp_form()
 
         st.stop()
-
-    # --------------------------------------------------------
-    # BRAND HEADER
-    # --------------------------------------------------------
 
     brand_left, brand_right = st.columns(
         [1, 3]
@@ -1501,10 +1267,6 @@ def require_login():
 
     st.divider()
 
-    # --------------------------------------------------------
-    # INTRODUCTION
-    # --------------------------------------------------------
-
     st.subheader(
         "Intelligent evaluation. Better insights."
     )
@@ -1514,10 +1276,6 @@ def require_login():
     )
 
     st.write("")
-
-    # --------------------------------------------------------
-    # FEATURES
-    # --------------------------------------------------------
 
     f1, f2, f3 = st.columns(3)
 
@@ -1565,10 +1323,6 @@ def require_login():
 
     st.write("")
 
-    # --------------------------------------------------------
-    # VERIFIED MESSAGE
-    # --------------------------------------------------------
-
     if "just_verified_username" in st.session_state:
 
         verified_username = (
@@ -1585,10 +1339,6 @@ def require_login():
             "just_verified_username",
             None,
         )
-
-    # --------------------------------------------------------
-    # EMAIL CONFIGURATION
-    # --------------------------------------------------------
 
     try:
 
@@ -1609,10 +1359,6 @@ def require_login():
             icon="📧",
         )
 
-    # --------------------------------------------------------
-    # LOGIN / REGISTER
-    # --------------------------------------------------------
-
     login_tab, register_tab = st.tabs(
         [
             "Login",
@@ -1628,10 +1374,6 @@ def require_login():
 
         _register_form()
 
-    # --------------------------------------------------------
-    # FOOTER
-    # --------------------------------------------------------
-
     footer_col = st.columns([1, 2, 1])[1]
 
     with footer_col:
@@ -1640,11 +1382,6 @@ def require_login():
         )
 
     st.stop()
-
-
-# ============================================================
-# LOGOUT
-# ============================================================
 
 def logout_button():
 
