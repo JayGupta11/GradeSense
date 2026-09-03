@@ -1,24 +1,3 @@
-"""
-GradeSense - Production OCR Module
-===================================
-
-Qwen2.5-VL-3B-Instruct based handwritten answer-sheet OCR.
-
-Designed for:
-    - Streamlit
-    - Multiple student PDFs
-    - Different handwriting
-    - Different numbers of attempted questions
-    - Out-of-order answers
-    - MCQ + subjective pages
-    - 4 GB RTX 3050 Laptop GPU
-    - 4-bit BitsAndBytes quantization
-
-Important:
-    OCR reports only what it detects.
-    It does NOT assume that every question was attempted.
-"""
-
 import os
 import re
 import gc
@@ -28,11 +7,6 @@ from typing import Dict, List, Tuple, Optional
 
 import torch
 import streamlit as st
-
-
-# ============================================================
-# PATHS
-# ============================================================
 
 PROJECT_ROOT = os.path.abspath(
     os.path.join(
@@ -55,23 +29,8 @@ MODEL_PATH = os.environ.get(
 if not MODEL_PATH:
     MODEL_PATH = "Qwen/Qwen2.5-VL-3B-Instruct"
 
-
-# ============================================================
-# VISION SETTINGS
-# ============================================================
-
-# Larger than the previous 1024 setting so handwritten text
-# receives more visual tokens.
-#
-# 4 GB GPU means we should not push this too high.
-
 MIN_PIXELS = 256 * 28 * 28
 MAX_PIXELS = 1280 * 28 * 28
-
-
-# ============================================================
-# GENERATION SETTINGS
-# ============================================================
 
 MAX_NEW_TOKENS_CLASSIFY = 20
 
@@ -83,25 +42,8 @@ MAX_NEW_TOKENS_SUBJECTIVE_FULL = 1500
 
 MAX_NEW_TOKENS_SUBJECTIVE_REGION = 1100
 
-
-# ============================================================
-# GPU SETTINGS
-# ============================================================
-
 GPU_MEMORY_LIMIT = "3.55GiB"
 CPU_MEMORY_LIMIT = "11GiB"
-
-
-# ============================================================
-# DETECTION SETTINGS
-# ============================================================
-
-# The model first sees the entire page.
-#
-# Then it sees overlapping horizontal bands.
-#
-# This makes handwriting physically larger to the vision model
-# without assuming how many questions the student attempted.
 
 REGION_OVERLAP = 0.18
 
@@ -109,24 +51,13 @@ MCQ_BAND_HEIGHT = 0.32
 
 SUBJECTIVE_BAND_HEIGHT = 0.38
 
-
-# ============================================================
-# GLOBAL ENGINE
-# ============================================================
-
 _engine = None
-
-
-# ============================================================
-# LOGGING
-# ============================================================
 
 def _log(message: str):
     print(
         f"[GradeSense OCR] {message}",
         flush=True
     )
-
 
 def _clear_cuda_cache():
     gc.collect()
@@ -142,7 +73,6 @@ def _clear_cuda_cache():
             torch.cuda.ipc_collect()
         except Exception:
             pass
-
 
 def _log_vram():
 
@@ -174,11 +104,6 @@ def _log_vram():
 
     except Exception:
         pass
-
-
-# ============================================================
-# CACHED QWEN MODEL
-# ============================================================
 
 @st.cache_resource(
     show_spinner=False,
@@ -343,11 +268,6 @@ def _load_qwen():
         MODEL_PATH
     )
 
-
-# ============================================================
-# IMAGE MESSAGE
-# ============================================================
-
 def _prepare_messages(
     image_path: str,
     prompt: str
@@ -382,11 +302,6 @@ def _prepare_messages(
             ],
         }
     ]
-
-
-# ============================================================
-# QWEN INFERENCE
-# ============================================================
 
 def _generate_from_image(
     image_path: str,
@@ -472,11 +387,6 @@ def _generate_from_image(
 
     return result.strip()
 
-
-# ============================================================
-# PAGE CLASSIFICATION
-# ============================================================
-
 CLASSIFICATION_PROMPT = r"""
 Classify this student's answer-sheet page.
 
@@ -499,7 +409,6 @@ Do not explain.
 
 Return only MCQ or SUBJECTIVE.
 """
-
 
 def _classify_page(
     image_path: str
@@ -540,11 +449,6 @@ def _classify_page(
     )
 
     return page_type
-
-
-# ============================================================
-# OUTPUT CLEANING
-# ============================================================
 
 def _clean_raw_output(
     text: str
@@ -596,11 +500,6 @@ def _clean_raw_output(
         )
 
     return text.strip()
-
-
-# ============================================================
-# NUMBERED ANSWER PARSER
-# ============================================================
 
 def _parse_numbered_blocks(
     text: str
@@ -718,11 +617,6 @@ def _parse_numbered_blocks(
 
     return blocks
 
-
-# ============================================================
-# QUESTION NUMBER VALIDATION
-# ============================================================
-
 def _valid_question_number(
     number: str
 ) -> bool:
@@ -743,11 +637,6 @@ def _valid_question_number(
     return (
         1 <= value <= 200
     )
-
-
-# ============================================================
-# MCQ ANSWER NORMALIZATION
-# ============================================================
 
 def _clean_answer(
     answer: str
@@ -779,13 +668,6 @@ def _normalize_mcq_answer(
     if not body:
         return ""
 
-    # Examples:
-    #
-    # A
-    # A.
-    # A) Random Forest
-    # A Random Forest
-    #
     match = re.match(
         r"^([A-Da-d])"
         r"(?:[\.\):,\-]|\s|$)"
@@ -813,18 +695,7 @@ def _normalize_mcq_answer(
             f"{letter}. "
             f"{remainder}"
         )
-
-    # Handles forms such as:
-    #
-    # 3. C
-    # C Random Forest Regression
-    #
     return body
-
-
-# ============================================================
-# MCQ EXTRACTION
-# ============================================================
 
 def _extract_mcq_answers(
     text: str
@@ -859,11 +730,6 @@ def _extract_mcq_answers(
         ] = answer
 
     return answers
-
-
-# ============================================================
-# MCQ PROMPT - WHOLE PAGE
-# ============================================================
 
 MCQ_FULL_PROMPT = r"""
 Read this student's answer-sheet page carefully.
@@ -932,11 +798,6 @@ If there are no clearly detectable handwritten MCQ answers:
 [NO_ANSWERS]
 """
 
-
-# ============================================================
-# MCQ PROMPT - REGION
-# ============================================================
-
 MCQ_REGION_PROMPT = r"""
 This image is a crop from a student's MCQ answer sheet.
 
@@ -992,11 +853,6 @@ Do not explain.
 
 Return only numbered answers.
 """
-
-
-# ============================================================
-# SUBJECTIVE FULL PROMPT
-# ============================================================
 
 SUBJECTIVE_FULL_PROMPT = r"""
 Transcribe the student's handwritten answers on this page.
@@ -1055,11 +911,6 @@ If there are no clearly visible numbered handwritten answers:
 
 [NO_ANSWERS]
 """
-
-
-# ============================================================
-# SUBJECTIVE REGION PROMPT
-# ============================================================
 
 SUBJECTIVE_REGION_PROMPT = r"""
 This image is a crop from a student's handwritten answer sheet.
@@ -1134,11 +985,6 @@ If no clearly numbered handwritten answer is visible:
 [NO_ANSWERS]
 """
 
-
-# ============================================================
-# TEMPORARY CROP
-# ============================================================
-
 def _make_crop(
     image_path: str,
     y1: int,
@@ -1199,11 +1045,6 @@ def _make_crop(
 
     return crop_path
 
-
-# ============================================================
-# ADAPTIVE REGION GENERATION
-# ============================================================
-
 def _calculate_regions(
     height: int,
     band_height_ratio: float,
@@ -1254,8 +1095,6 @@ def _calculate_regions(
 
         start += step
 
-    # Remove duplicate regions.
-
     unique = []
 
     seen = set()
@@ -1274,11 +1113,6 @@ def _calculate_regions(
         )
 
     return unique
-
-
-# ============================================================
-# MCQ FULL PAGE
-# ============================================================
 
 def _mcq_full_page(
     image_path: str
@@ -1313,11 +1147,6 @@ def _mcq_full_page(
     )
 
     return answers
-
-
-# ============================================================
-# MCQ REGION OCR
-# ============================================================
 
 def _mcq_regions(
     image_path: str
@@ -1415,11 +1244,6 @@ def _mcq_regions(
 
     return observations
 
-
-# ============================================================
-# MCQ MERGE
-# ============================================================
-
 def _merge_mcq(
     full_answers: Dict[str, str],
     region_answers: List[Dict[str, str]]
@@ -1428,8 +1252,6 @@ def _merge_mcq(
     observations = defaultdict(
         list
     )
-
-    # Whole page gets highest trust.
 
     for number, answer in (
         full_answers.items()
@@ -1443,8 +1265,6 @@ def _merge_mcq(
                 100
             )
         )
-
-    # Region observations.
 
     for region in region_answers:
 
@@ -1470,9 +1290,6 @@ def _merge_mcq(
         if not candidates:
             continue
 
-        # Prefer the candidate seen by the
-        # whole-page pass.
-
         full_candidates = [
             item
             for item in candidates
@@ -1489,8 +1306,6 @@ def _merge_mcq(
             )[0]
 
         else:
-
-            # Count agreement among regions.
 
             counts = defaultdict(
                 int
@@ -1525,11 +1340,6 @@ def _merge_mcq(
 
     return merged
 
-
-# ============================================================
-# MCQ MASTER
-# ============================================================
-
 def _process_mcq(
     image_path: str
 ) -> str:
@@ -1547,22 +1357,9 @@ def _process_mcq(
         f"{width} x {height}"
     )
 
-    # --------------------------------------------------------
-    # Pass 1: whole page
-    # --------------------------------------------------------
-
     full_answers = _mcq_full_page(
         image_path
     )
-
-    # --------------------------------------------------------
-    # Pass 2:
-    #
-    # Always use region OCR for detection quality.
-    #
-    # This is intentionally NOT based on a fixed number of
-    # expected questions.
-    # --------------------------------------------------------
 
     region_answers = _mcq_regions(
         image_path
@@ -1581,11 +1378,6 @@ def _process_mcq(
     return _format_answers(
         merged
     )
-
-
-# ============================================================
-# SUBJECTIVE FULL PAGE
-# ============================================================
 
 def _subjective_full_page(
     image_path: str
@@ -1620,11 +1412,6 @@ def _subjective_full_page(
     )
 
     return blocks
-
-
-# ============================================================
-# SUBJECTIVE REGION OCR
-# ============================================================
 
 def _subjective_regions(
     image_path: str
@@ -1722,11 +1509,6 @@ def _subjective_regions(
 
     return results
 
-
-# ============================================================
-# SUBJECTIVE BODY CLEANING
-# ============================================================
-
 def _clean_subjective_body(
     body: str
 ) -> str:
@@ -1756,11 +1538,6 @@ def _clean_subjective_body(
 
     return body.strip()
 
-
-# ============================================================
-# FRAGMENT DETECTION
-# ============================================================
-
 def _looks_like_fragment(
     body: str
 ) -> bool:
@@ -1774,9 +1551,6 @@ def _looks_like_fragment(
         return True
 
     lower = text.lower()
-
-    # Typical pieces that can occur when a crop begins
-    # inside a previous answer.
 
     fragment_only = {
         "html, xml, json",
@@ -1794,11 +1568,6 @@ def _looks_like_fragment(
 
     return False
 
-
-# ============================================================
-# SUBJECTIVE MERGE
-# ============================================================
-
 def _merge_subjective(
     whole_blocks,
     region_results
@@ -1807,11 +1576,7 @@ def _merge_subjective(
     candidates = defaultdict(
         list
     )
-
-    # --------------------------------------------------------
-    # Whole-page observations
-    # --------------------------------------------------------
-
+    
     for number, body in whole_blocks:
 
         number = str(
@@ -1843,10 +1608,6 @@ def _merge_subjective(
                 100
             )
         )
-
-    # --------------------------------------------------------
-    # Region observations
-    # --------------------------------------------------------
 
     for blocks in region_results:
 
@@ -1887,10 +1648,6 @@ def _merge_subjective(
                 )
             )
 
-    # --------------------------------------------------------
-    # Final selection
-    # --------------------------------------------------------
-
     merged = {}
 
     source_info = {}
@@ -1909,11 +1666,6 @@ def _merge_subjective(
         ]
 
         if full_entries:
-
-            # Whole-page answer is preferred,
-            # but select the longest complete
-            # whole-page transcription.
-
             best = max(
                 full_entries,
                 key=lambda x: len(
@@ -1926,12 +1678,6 @@ def _merge_subjective(
             ] = best[0]
 
         else:
-
-            # Region-only question.
-            #
-            # If several regions saw it, choose
-            # the longest observation.
-
             best = max(
                 entries,
                 key=lambda x: len(
@@ -1955,11 +1701,6 @@ def _merge_subjective(
         }
 
     return merged, source_info
-
-
-# ============================================================
-# SUBJECTIVE MASTER
-# ============================================================
 
 def _process_subjective(
     image_path: str
@@ -2027,11 +1768,6 @@ def _process_subjective(
         merged
     )
 
-
-# ============================================================
-# FORMATTING
-# ============================================================
-
 def _format_answers(
     answers: Dict[str, str]
 ) -> str:
@@ -2073,7 +1809,6 @@ def _format_answers(
         output
     )
 
-
 def _format_subjective_answers(
     answers: Dict[str, str]
 ) -> str:
@@ -2113,11 +1848,6 @@ def _format_subjective_answers(
     return "\n\n".join(
         output
     )
-
-
-# ============================================================
-# MAIN PUBLIC FUNCTION
-# ============================================================
 
 def extract_text(
     image_path: str,
@@ -2179,11 +1909,6 @@ def extract_text(
             "in ocr_module.py."
         ) from exc
 
-
-# ============================================================
-# COMPATIBILITY API
-# ============================================================
-
 def extract_text_column_aware(
     image_path: str,
     preprocess: bool = True
@@ -2193,7 +1918,6 @@ def extract_text_column_aware(
         image_path,
         preprocess=preprocess
     )
-
 
 def extract_text_with_boxes(
     image_path: str,
@@ -2206,11 +1930,6 @@ def extract_text_with_boxes(
     )
 
     return text, []
-
-
-# ============================================================
-# PRINTED QUESTION PAPER / ANSWER KEY OCR
-# ============================================================
 
 PRINTED_TEXT_PROMPT = r"""
 Read all printed or typed text visible in this image.
@@ -2237,7 +1956,6 @@ Do not add explanations.
 Return only the transcription.
 """
 
-
 def extract_printed_text(
     image_path: str,
     preprocess: bool = True
@@ -2263,15 +1981,9 @@ def extract_printed_text(
 
     return result.strip()
 
-
-# ============================================================
-# ENGINE INFORMATION
-# ============================================================
-
 def get_active_engine():
 
     return _engine
-
 
 def get_model_info():
 
@@ -2306,11 +2018,6 @@ def get_model_info():
             _engine is not None,
     }
 
-
-# ============================================================
-# EXPLICIT MODEL UNLOAD
-# ============================================================
-
 def unload_model():
 
     global _engine
@@ -2329,11 +2036,6 @@ def unload_model():
     _log(
         "Qwen model cache cleared."
     )
-
-
-# ============================================================
-# CLI TEST
-# ============================================================
 
 if __name__ == "__main__":
 
