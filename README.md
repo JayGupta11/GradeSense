@@ -71,8 +71,11 @@ After these three steps, the environment and Qwen model are ready.
 Place these files inside the data folder:
 
 data/
+
 ├── train.parquet
+
 ├── validation.parquet
+
 └── test.parquet
 
 Open PowerShell and go to the src folder:
