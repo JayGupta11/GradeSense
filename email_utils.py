@@ -4,8 +4,8 @@ from email.mime.text import MIMEText
 
 SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-EMAIL_SENDER = os.environ.get("EMAIL_SENDER", "jayawsb74@gmail.com")
-EMAIL_APP_PASSWORD = os.environ.get("EMAIL_APP_PASSWORD", "oxmp otzq uspr jxvn")
+EMAIL_SENDER = os.environ.get("EMAIL_SENDER", "your-email@gmail.com")
+EMAIL_APP_PASSWORD = os.environ.get("EMAIL_APP_PASSWORD", "your_APP_PASSWORD")
 
 def is_configured() -> bool:
     return bool(EMAIL_SENDER and EMAIL_APP_PASSWORD)
