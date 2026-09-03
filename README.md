@@ -86,7 +86,7 @@ cd src
 
 Run:
 
-```text
+```powershell
 python train_marks_predictor.py
 ```
 After successful training, the model is saved as:
@@ -107,6 +107,8 @@ Model saved to ../models/marks_predictor.joblib
 GradeSense uses Gmail SMTP for OTP verification.
 
 Open the file containing the SMTP/OTP configuration and update:
+
+#### email_utils.py:
 
 ```text
 EMAIL_ADDRESS = "your-email@gmail.com"
