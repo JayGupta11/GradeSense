@@ -14,7 +14,6 @@ COLUMN_MAP = {
 }
 MAX_SCORE = 1.0  
 
-# A small hyperparameter grid to select from using the validation set.
 CANDIDATE_HYPERPARAMS = [
     {"n_estimators": 200, "max_depth": 6, "min_samples_leaf": 5},
     {"n_estimators": 200, "max_depth": 10, "min_samples_leaf": 3},
