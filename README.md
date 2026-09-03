@@ -66,15 +66,52 @@ models/Qwen2.5-VL-3B-Instruct
 
 After these three steps, the environment and Qwen model are ready.
 
-### 4. Gmail OTP Configuration
+### 4. Train the Model
+
+Place these files inside the data folder:
+
+data/
+├── train.parquet
+├── validation.parquet
+└── test.parquet
+
+Open PowerShell and go to the src folder:
+
+```text
+cd src
+```
+
+Run:
+
+```text
+python train_marks_predictor.py
+```
+After successful training, the model is saved as:
+
+models/marks_predictor.joblib
+
+The terminal also displays:
+
+```text
+Test MAE
+Test RMSE
+Feature importances
+Model saved to ../models/marks_predictor.joblib
+```
+
+### 5. Gmail OTP Configuration
 
 GradeSense uses Gmail SMTP for OTP verification.
 
 Open the file containing the SMTP/OTP configuration and update:
 
+```text
 EMAIL_ADDRESS = "your-email@gmail.com"
+```
 
+```text
 EMAIL_APP_PASSWORD = "your-16-character-app-password"
+```
 
 #### Create a Gmail App Password
 
