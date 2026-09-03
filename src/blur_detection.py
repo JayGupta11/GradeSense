@@ -10,11 +10,9 @@ def compute_blur_score(image_path: str) -> float:
     laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
     return float(laplacian_var)
 
-
 def is_blurry(image_path: str, threshold: float = 100.0) -> tuple[bool, float]:
     score = compute_blur_score(image_path)
     return score < threshold, score
-
 
 def check_image_quality(image_path: str, threshold: float = 100.0) -> dict:
     blurry, score = is_blurry(image_path, threshold)
