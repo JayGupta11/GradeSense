@@ -1,10 +1,3 @@
-"""
-Check the existing GradeSense environment before loading Qwen.
-
-Run:
-    python test_environment.py
-"""
-
 import sys
 
 print("=" * 70)
