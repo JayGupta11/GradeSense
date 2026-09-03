@@ -165,9 +165,6 @@ GradeSense/
 │   ├── ocr_module.py
 │   ├── batch_grade.py
 │   ├── pdf_utils.py
-│   ├── setup_qwen.py
-│   ├── download_qwen_model.py
-│   ├── test_environment.py
 │   ├── pipeline.py
 │   ├── train_marks_predictor.py
 │   ├── scoring_engine.py
@@ -178,6 +175,9 @@ GradeSense/
 │   ├── choice_grouping.py
 │   └── blur_detection.py
 ├── requirements.txt
+├── test_environment.py
+├── download_qwen_model.py
+├── setup_qwen.py
 └── README.md
 ```
 
