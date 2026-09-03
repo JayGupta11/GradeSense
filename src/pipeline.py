@@ -27,7 +27,6 @@ def evaluate_answer_sheet(
     max_marks: float = 10.0,
     blur_threshold: float = 100.0,
 ) -> PipelineResult:
-    # Quality gate — block blurry uploads before wasting OCR/NLP compute
     quality = check_image_quality(image_path, threshold=blur_threshold)
     if not quality["accepted"]:
         return PipelineResult(
@@ -36,7 +35,6 @@ def evaluate_answer_sheet(
             blur_score=quality["blur_score"],
         )
 
-    # OCR
     try:
         student_text = extract_text(image_path)
     except Exception as e:
@@ -59,7 +57,6 @@ def evaluate_answer_sheet(
             ocr_engine=get_active_engine(),
         )
 
-    # NLP comparison
     if not keywords:
         keywords = extract_keywords_from_model_answer(model_answer)
 
