@@ -6,17 +6,14 @@ from nlp_evaluator import clean_text, semantic_similarity
 
 _trained_predictor = None
 
-
 def load_trained_model(model_path: str = "../models/marks_predictor.joblib"):
     global _trained_predictor
     from marks_predictor import MarksPredictor
     _trained_predictor = MarksPredictor().load(model_path)
     return _trained_predictor
 
-
 def using_trained_model() -> bool:
     return _trained_predictor is not None
-
 
 def _token_overlap_ratio(point_text: str, sentence_text: str) -> float:
     point_tokens = set(clean_text(point_text).split())
@@ -26,12 +23,10 @@ def _token_overlap_ratio(point_text: str, sentence_text: str) -> float:
     common = point_tokens & sentence_tokens
     return len(common) / len(point_tokens)
 
-
 @dataclass
 class RubricPoint:
     text: str
     marks: float
-
 
 @dataclass
 class Question:
@@ -43,9 +38,8 @@ class Question:
     expected_length_words: Optional[int] = None
     choice_group: Optional[str] = None
     choice_required: Optional[int] = None
-    question_type: str = "Short_Answer"  # "Short_Answer" or "MCQ"
-    options: Optional[dict] = None  # for MCQ: {"A": "option text", "B": "...", ...}
-
+    question_type: str = "Short_Answer"  
+    options: Optional[dict] = None 
 
 @dataclass
 class PointResult:
@@ -54,7 +48,6 @@ class PointResult:
     best_match_sentence: str
     similarity: float
     awarded_marks: float
-
 
 @dataclass
 class RubricEvaluationResult:
@@ -66,7 +59,6 @@ class RubricEvaluationResult:
     point_results: List[PointResult]
     feedback: str
 
-
 def estimate_expected_length(max_marks: float) -> int:
     if max_marks <= 1:
         return 15
@@ -74,11 +66,9 @@ def estimate_expected_length(max_marks: float) -> int:
     length = int(max_marks * words_per_mark)
     return max(20, min(length, 250))
 
-
 def _split_sentences(text: str) -> List[str]:
     parts = re.split(r"[.\n;!?]+", text)
     return [p.strip() for p in parts if p.strip()]
-
 
 def auto_generate_rubric(model_answer: str, max_marks: float) -> List[RubricPoint]:
     sentences = _split_sentences(model_answer)
@@ -94,7 +84,6 @@ def auto_generate_rubric(model_answer: str, max_marks: float) -> List[RubricPoin
         points[-1].marks = round(points[-1].marks + drift, 3)
     return points
 
-
 def _credit_fraction(similarity: float, high: float, low: float) -> float:
     if similarity >= high:
         return 1.0
@@ -102,19 +91,16 @@ def _credit_fraction(similarity: float, high: float, low: float) -> float:
         return 0.0
     return round((similarity - low) / (high - low), 3)
 
-
 _THRESHOLDS = {
     "semantic": {"high": 0.62, "low": 0.30},
     "overlap": {"high": 0.55, "low": 0.20},
 }
-
 
 def _extract_mcq_letter(text: str) -> Optional[str]:
     """Pulls a single A/B/C/D choice out of free text, e.g. 'Ans: C' -> 'C',
     'B. Little or no autocorrelation' -> 'B' (letter+value combined)."""
     m = re.search(r"(?<![A-Za-z])([A-Da-d])(?![A-Za-z])", text)
     return m.group(1).upper() if m else None
-
 
 def _match_mcq_option_by_value(student_answer: str, options: dict, threshold: float = 0.5) -> Optional[str]:
     """
@@ -137,15 +123,7 @@ def _match_mcq_option_by_value(student_answer: str, options: dict, threshold: fl
             best_score, best_letter = combined, letter
     return best_letter if best_score >= threshold else None
 
-
 def evaluate_question(question: Question, student_answer: str) -> RubricEvaluationResult:
-    # MCQ questions: exact-match grading, not NLP similarity — but the
-    # student may have written the option LETTER (e.g. "B"), the option
-    # VALUE (e.g. "Little or no autocorrelation"), or BOTH together
-    # (e.g. "B. Little or no autocorrelation"). All three are handled:
-    # try letter extraction first (covers letter-only and letter+value),
-    # and only fall back to value-matching against the paper's parsed
-    # options when no letter was found at all (value-only case).
     if question.question_type == "MCQ":
         selected = _extract_mcq_letter(student_answer)
         matched_by_value = False
@@ -181,12 +159,6 @@ def evaluate_question(question: Question, student_answer: str) -> RubricEvaluati
 
     actual_length = len(student_answer.split())
 
-    # Hard floor: a genuinely blank/unanswered question always gets 0
-    # marks, full stop — never handed to the similarity model or the
-    # trained ML model at all. Without this, an empty string can still
-    # produce an arbitrary non-zero similarity/prediction (embedding
-    # models don't guarantee "empty input -> zero score"), which is
-    # exactly what caused random-looking marks on unanswered questions.
     if actual_length == 0:
         point_results = [
             PointResult(point_text=p.text, point_max_marks=p.marks, best_match_sentence="", similarity=0.0, awarded_marks=0.0)
@@ -228,8 +200,6 @@ def evaluate_question(question: Question, student_answer: str) -> RubricEvaluati
         thresholds = _THRESHOLDS[best_scoring_method]
 
         if not best_sentence.strip():
-            # No matching content was found for this point at all (e.g. every
-            # student sentence was empty/whitespace) — zero credit, no model call.
             fraction = 0.0
         elif _trained_predictor is not None:
             fraction = _trained_predictor.predict_fraction(point.text, best_sentence)
@@ -252,7 +222,6 @@ def evaluate_question(question: Question, student_answer: str) -> RubricEvaluati
         expected_length_words=expected_length, actual_length_words=actual_length,
         point_results=point_results, feedback=feedback,
     )
-
 
 def _generate_rubric_feedback(point_results, max_marks, awarded_marks, expected_length, actual_length) -> str:
     parts = []
