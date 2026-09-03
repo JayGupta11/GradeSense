@@ -13,14 +13,12 @@ from ocr_module import (
     extract_printed_text,
 )
 
-
 @dataclass
 class PageOCRResult:
     page_number: int
     text: str
     blur_score: float
     quality_warning: bool
-
 
 def extract_pdf_text(
     pdf_bytes: bytes,
@@ -70,7 +68,6 @@ def extract_pdf_text(
     doc.close()
     return "\n".join(page_texts)
 
-
 def pdf_to_page_images(
     pdf_bytes: bytes,
     dpi: int = 200,
@@ -87,7 +84,6 @@ def pdf_to_page_images(
 
     doc.close()
     return page_images
-
 
 def ocr_pdf(
     pdf_bytes: bytes,
@@ -139,7 +135,6 @@ def ocr_pdf(
             os.unlink(tmp_path)
 
     return "\n".join(full_text_parts), results
-
 
 def roll_number_from_filename(filename: str) -> str:
     return os.path.splitext(os.path.basename(filename))[0]
