@@ -1,13 +1,3 @@
-"""
-Install only the packages required by the GradeSense Qwen OCR module.
-
-Run this while the existing GradeSense `haesenv` environment is active:
-
-    python setup_qwen.py
-
-This script intentionally does NOT reinstall PyTorch.
-"""
-
 import subprocess
 import sys
 
