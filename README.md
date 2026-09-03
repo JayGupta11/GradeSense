@@ -73,6 +73,7 @@ GradeSense uses Gmail SMTP for OTP verification.
 Open the file containing the SMTP/OTP configuration and update:
 
 EMAIL_ADDRESS = "your-email@gmail.com"
+
 EMAIL_APP_PASSWORD = "your-16-character-app-password"
 
 #### Create a Gmail App Password
