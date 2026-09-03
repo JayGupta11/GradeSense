@@ -28,11 +28,6 @@ from batch_grade import (
 
 import database as db
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
 BASE_DIR = os.path.dirname(__file__)
 
 LOGO_PATH = os.path.join(
@@ -41,12 +36,6 @@ LOGO_PATH = os.path.join(
     "logo.png",
 )
 
-
-# ============================================================
-# PAGE CONFIG
-# IMPORTANT: keep this before importing auth
-# ============================================================
-
 st.set_page_config(
     page_title="GradeSense | AI Answer Evaluation",
     page_icon=LOGO_PATH if os.path.exists(LOGO_PATH) else "✦",
@@ -54,22 +43,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
 import auth
-
-
-# ============================================================
-# GLOBAL CSS
-# ============================================================
 
 st.markdown(
     """
     <style>
-
-    /* ======================================================
-        GLOBAL BACKGROUND
-       ====================================================== */
-
     .stApp {
         background:
             radial-gradient(
@@ -131,21 +109,11 @@ st.markdown(
         background: transparent !important;
     }
 
-
-    /* ======================================================
-        MAIN WIDTH
-       ====================================================== */
-
     [data-testid="stMainBlockContainer"] {
         max-width: 1240px !important;
         padding-top: 1.8rem !important;
         padding-bottom: 2.5rem !important;
     }
-
-
-    /* ======================================================
-        SIDEBAR
-       ====================================================== */
 
     section[data-testid="stSidebar"] {
         background:
@@ -160,15 +128,9 @@ st.markdown(
             rgba(148, 163, 184, 0.12);
     }
 
-
     section[data-testid="stSidebar"] > div {
         background: transparent !important;
     }
-
-
-    /* ======================================================
-        TYPOGRAPHY
-       ====================================================== */
 
     h1,
     h2,
@@ -177,28 +139,20 @@ st.markdown(
         letter-spacing: -0.5px;
     }
 
-
     h1 {
         font-weight: 850 !important;
     }
-
 
     h2,
     h3 {
         font-weight: 780 !important;
     }
 
-
     p,
     label,
     span {
         letter-spacing: 0.05px;
     }
-
-
-    /* ======================================================
-        TOP RIBBON
-       ====================================================== */
 
     .gs-ribbon {
         padding: 12px 18px;
@@ -223,24 +177,17 @@ st.markdown(
         margin-bottom: 18px;
     }
 
-
     .gs-ribbon-title {
         font-size: 17px;
         font-weight: 800;
         color: #ffffff;
     }
 
-
     .gs-ribbon-subtitle {
         font-size: 11px;
         color: #aab4ca;
         margin-top: 2px;
     }
-
-
-    /* ======================================================
-        HERO
-       ====================================================== */
 
     .gs-hero {
         padding: 28px;
@@ -269,7 +216,6 @@ st.markdown(
             rgba(0, 0, 0, 0.20);
     }
 
-
     @keyframes gradesenseHero {
 
         0% {
@@ -286,7 +232,6 @@ st.markdown(
 
     }
 
-
     .gs-hero-kicker {
         color: #c7d2fe;
         font-size: 10px;
@@ -296,14 +241,12 @@ st.markdown(
         margin-bottom: 8px;
     }
 
-
     .gs-hero-title {
         color: #ffffff;
         font-size: 38px;
         font-weight: 850;
         letter-spacing: -1.5px;
     }
-
 
     .gs-hero-text {
         color: #e0e7ff;
@@ -312,11 +255,6 @@ st.markdown(
         max-width: 820px;
         margin-top: 8px;
     }
-
-
-    /* ======================================================
-        STATUS CARDS
-       ====================================================== */
 
     .gs-status {
         padding: 12px 15px;
@@ -335,11 +273,6 @@ st.markdown(
         font-weight: 650;
     }
 
-
-    /* ======================================================
-        CARDS
-       ====================================================== */
-
     div[data-testid="stVerticalBlockBorderWrapper"] {
         border-radius: 17px !important;
         border-color:
@@ -348,11 +281,6 @@ st.markdown(
         background:
             rgba(15, 23, 42, 0.42) !important;
     }
-
-
-    /* ======================================================
-        BUTTONS
-       ====================================================== */
 
     .stButton > button {
         min-height: 44px !important;
@@ -370,7 +298,6 @@ st.markdown(
             border-color 0.18s ease !important;
     }
 
-
     .stButton > button:hover {
         transform: translateY(-2px) !important;
 
@@ -381,7 +308,6 @@ st.markdown(
             0 10px 28px
             rgba(99, 102, 241, 0.18) !important;
     }
-
 
     .stButton > button[kind="primary"] {
         color: #ffffff !important;
@@ -404,7 +330,6 @@ st.markdown(
         border: none !important;
     }
 
-
     @keyframes gradesenseButton {
 
         0% {
@@ -421,11 +346,6 @@ st.markdown(
 
     }
 
-
-    /* ======================================================
-        INPUTS
-       ====================================================== */
-
     .stTextInput input,
     .stTextArea textarea,
     .stSelectbox div[data-baseweb="select"] > div {
@@ -441,7 +361,6 @@ st.markdown(
             rgba(148, 163, 184, 0.18) !important;
     }
 
-
     .stTextInput input:focus,
     .stTextArea textarea:focus {
         border-color:
@@ -452,15 +371,9 @@ st.markdown(
             rgba(99, 102, 241, 0.12) !important;
     }
 
-
-    /* ======================================================
-        FILE UPLOADER
-       ====================================================== */
-
     [data-testid="stFileUploader"] {
         border-radius: 14px !important;
     }
-
 
     [data-testid="stFileUploaderDropzone"] {
         background:
@@ -472,11 +385,6 @@ st.markdown(
 
         border-radius: 13px !important;
     }
-
-
-    /* ======================================================
-        METRICS
-       ====================================================== */
 
     [data-testid="stMetric"] {
         padding: 16px;
@@ -490,34 +398,18 @@ st.markdown(
             rgba(148, 163, 184, 0.12);
     }
 
-
     [data-testid="stMetricValue"] {
         font-weight: 800 !important;
     }
-
-
-    /* ======================================================
-        DATAFRAME
-       ====================================================== */
 
     [data-testid="stDataFrame"] {
         border-radius: 13px !important;
         overflow: hidden;
     }
 
-
-    /* ======================================================
-        PROGRESS
-       ====================================================== */
-
     [data-testid="stProgressBar"] {
         height: 12px !important;
     }
-
-
-    /* ======================================================
-        FOOTER
-       ====================================================== */
 
     .gs-footer {
         text-align: center;
@@ -530,11 +422,6 @@ st.markdown(
 
         white-space: nowrap;
     }
-
-
-    /* ======================================================
-        MOBILE
-       ====================================================== */
 
     @media (max-width: 800px) {
 
@@ -554,17 +441,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-# ============================================================
-# AUTHENTICATION
-# ============================================================
-
 auth.require_login()
-
-
-# ============================================================
-# SESSION STATE
-# ============================================================
 
 DEFAULTS = {
     "gs_page": "Dashboard",
@@ -589,11 +466,6 @@ for key, value in DEFAULTS.items():
     if key not in st.session_state:
         st.session_state[key] = value
 
-
-# ============================================================
-# MODEL
-# ============================================================
-
 try:
 
     model_active = try_load_trained_model(
@@ -603,11 +475,6 @@ try:
 except Exception:
 
     model_active = False
-
-
-# ============================================================
-# HELPERS
-# ============================================================
 
 def _safe(value):
 
@@ -648,7 +515,6 @@ def _safe(value):
 
     return str(value)
 
-
 def _history():
 
     try:
@@ -662,7 +528,6 @@ def _history():
 
         return []
 
-
 def _fmt_date(value):
 
     if isinstance(
@@ -675,7 +540,6 @@ def _fmt_date(value):
         )
 
     return "Date unavailable"
-
 
 def _session_groups(history):
 
@@ -741,7 +605,6 @@ def _session_groups(history):
         reverse=True,
     )
 
-
 def _reset_evaluation():
 
     st.session_state.gs_step = 1
@@ -769,7 +632,6 @@ def _reset_evaluation():
     st.session_state.gs_page = (
         "New Evaluation"
     )
-
 
 def _read_uploaded_file(
     uploaded_file,
@@ -821,7 +683,6 @@ def _get_profile_picture():
         pass
 
     return None
-
 
 def _make_circular_image(uploaded_file):
     image = Image.open(uploaded_file).convert("RGBA")
@@ -879,11 +740,6 @@ def _display_name():
         or "User"
     )
 
-
-# ============================================================
-# TOP RIBBON
-# ============================================================
-
 def _top_ribbon():
 
     logo_col, brand_col, workspace_col, profile_col = st.columns(
@@ -922,11 +778,6 @@ def _top_ribbon():
             st.markdown(
                 f"### 👤 {_display_name()}"
             )
-
-
-# ============================================================
-# HERO
-# ============================================================
 
 def _hero(
     title,
@@ -969,11 +820,6 @@ def _hero(
             icon="⚡",
         )
 
-
-# ============================================================
-# PAGE HEADER
-# ============================================================
-
 def _page_header(
     title,
     subtitle,
@@ -988,11 +834,6 @@ def _page_header(
     )
 
     st.divider()
-
-
-# ============================================================
-# WORKFLOW STEPPER
-# ============================================================
 
 def _stepper(step):
 
@@ -1055,11 +896,6 @@ def _stepper(step):
                     f"{subtitle} · Upcoming"
                 )
 
-
-# ============================================================
-# PROGRESS
-# ============================================================
-
 def _progress(
     progress_box,
     value,
@@ -1085,11 +921,6 @@ def _progress(
     st.caption(
         stage
     )
-
-
-# ============================================================
-# QUESTION DETAIL
-# ============================================================
 
 def _student_question_detail(
     results,
@@ -1203,11 +1034,6 @@ def _student_question_detail(
                     feedback,
                     icon="💬",
                 )
-
-
-# ============================================================
-# SIDEBAR
-# ============================================================
 
 with st.sidebar:
 
@@ -1386,11 +1212,6 @@ with st.sidebar:
     st.divider()
 
     auth.logout_button()
-
-
-# ============================================================
-# DASHBOARD
-# ============================================================
 
 def _render_dashboard():
 
@@ -1618,11 +1439,6 @@ def _render_dashboard():
             icon="💾",
         )
 
-
-# ============================================================
-# NEW EVALUATION
-# ============================================================
-
 def _render_new_evaluation():
 
     _hero(
@@ -1641,10 +1457,6 @@ def _render_new_evaluation():
     step = (
         st.session_state.gs_step
     )
-
-    # ========================================================
-    # STEP 1
-    # ========================================================
 
     if step == 1:
 
@@ -1873,10 +1685,6 @@ def _render_new_evaluation():
 
                 st.rerun()
 
-    # ========================================================
-    # STEP 2
-    # ========================================================
-
     elif step == 2:
 
         st.subheader(
@@ -2080,11 +1888,7 @@ def _render_new_evaluation():
                         f"Student {index + 1}/{total_students} · {roll}",
                         "Input loaded",
                     )
-
-                    # ------------------------------------------------
-                    # TXT
-                    # ------------------------------------------------
-
+                    
                     if ext == ".txt":
 
                         student_text = (
@@ -2100,10 +1904,6 @@ def _render_new_evaluation():
                             f"Student {index + 1}/{total_students} · {roll}",
                             "Text loaded · preparing grading",
                         )
-
-                    # ------------------------------------------------
-                    # PDF
-                    # ------------------------------------------------
 
                     elif ext == ".pdf":
 
@@ -2151,10 +1951,6 @@ def _render_new_evaluation():
                             f"Student {index + 1}/{total_students} · {roll}",
                             "OCR complete · grading detected answers",
                         )
-
-                    # ------------------------------------------------
-                    # IMAGE
-                    # ------------------------------------------------
 
                     elif ext in (
                         ".jpg",
@@ -2244,10 +2040,6 @@ def _render_new_evaluation():
                         )
 
                         continue
-
-                    # ------------------------------------------------
-                    # GRADING
-                    # ------------------------------------------------
 
                     status_box.info(
                         f"Processing **{roll}** — calculating marks",
@@ -2431,10 +2223,6 @@ def _render_new_evaluation():
             )
 
             st.rerun()
-
-    # ========================================================
-    # STEP 3
-    # ========================================================
 
     elif step == 3:
 
@@ -2692,11 +2480,6 @@ def _render_new_evaluation():
                 _reset_evaluation()
 
                 st.rerun()
-
-
-# ============================================================
-# EVALUATION HISTORY
-# ============================================================
 
 def _render_history():
 
@@ -3066,11 +2849,6 @@ def _render_history():
                         icon="🔀",
                     )
 
-
-# ============================================================
-# PROFILE
-# ============================================================
-
 def _render_profile():
 
     _page_header(
@@ -3294,10 +3072,6 @@ def _render_profile():
                     f"Could not save profile picture: {exc}"
                 )
 
-# ============================================================
-# ABOUT US
-# ============================================================
-
 def _render_about():
 
     _hero(
@@ -3409,11 +3183,6 @@ def _render_about():
         icon="🎓",
     )
 
-
-# ============================================================
-# SETTINGS
-# ============================================================
-
 def _render_settings():
 
     _page_header(
@@ -3513,17 +3282,7 @@ def _render_settings():
         icon="🟢",
     )
 
-
-# ============================================================
-# TOP RIBBON
-# ============================================================
-
 _top_ribbon()
-
-
-# ============================================================
-# PAGE ROUTING
-# ============================================================
 
 if st.session_state.gs_page == "Dashboard":
 
@@ -3554,11 +3313,6 @@ else:
     st.session_state.gs_page = "Dashboard"
 
     st.rerun()
-
-
-# ============================================================
-# FOOTER
-# ============================================================
 
 st.divider()
 
