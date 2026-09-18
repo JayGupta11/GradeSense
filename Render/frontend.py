@@ -8,6 +8,17 @@ and result display. Heavy OCR/model inference is delegated to a separate
 GPU backend through GRADESENSE_BACKEND_URL.
 """
 
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+import streamlit as st
+import pandas as pd
+import requests
+import database as db
+
 import os
 import tempfile
 import pandas as pd
