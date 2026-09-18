@@ -12,7 +12,8 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+SRC_DIR = PROJECT_ROOT / "src"
+sys.path.insert(0, str(SRC_DIR))
 
 import streamlit as st
 import pandas as pd
@@ -35,7 +36,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-LOGO_PATH = os.path.join(os.path.dirname(__file__), "assets", "logo.png")
+LOGO_PATH = str(SRC_DIR / "assets" / "logo.png")
 
 st.markdown("""
 <style>
